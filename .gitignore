@@ -1,0 +1,14 @@
+## Build results
+bin/
+obj/
+.vs/
+## User-specific files
+*.user
+*.suo
+## NuGet Packages
+packages/
+## Node modules
+node_modules/
+## Others
+*.log
+.DS_Store

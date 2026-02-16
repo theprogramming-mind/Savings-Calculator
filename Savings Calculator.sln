@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Savings Calculator", "Savings Calculator.csproj", "{97A62D8D-0F36-A126-557A-F7E581B4C610}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97A62D8D-0F36-A126-557A-F7E581B4C610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97A62D8D-0F36-A126-557A-F7E581B4C610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97A62D8D-0F36-A126-557A-F7E581B4C610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97A62D8D-0F36-A126-557A-F7E581B4C610}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4B97E52-7858-4FBD-A522-7FABF7865D26}
+	EndGlobalSection
+EndGlobal

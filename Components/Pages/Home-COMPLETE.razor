@@ -1,0 +1,569 @@
+@page "/"
+@rendermode InteractiveServer
+
+<div class="min-h-screen @GetBackgroundGradient() py-12 px-4 transition-colors duration-500">
+    <div class="max-w-4xl mx-auto relative">
+        
+        <!-- Vibe Selector in Top Right - EXPANDED STATE -->
+        @if (IsVibeExpanded)
+        {
+            <div class="fixed top-4 right-4 bg-white rounded-2xl shadow-xl p-5 min-w-[280px] z-50">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm font-semibold text-blue-900 flex items-center gap-2">
+                        <span>🎨</span>
+                        Choose Your Vibe
+                    </div>
+                    <button @onclick="ToggleVibe" 
+                            class="w-7 h-7 rounded-full bg-red-100 border-2 border-red-200 flex items-center justify-center hover:bg-red-200 hover:scale-110 transition-all text-red-600 font-bold text-lg">
+                        ×
+                    </button>
+                </div>
+
+                <!-- Round color buttons -->
+                <div class="flex gap-3 justify-center mb-4">
+                    <button @onclick='() => SetTheme("emerald")' 
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg hover:scale-110 transition-all @(CurrentTheme == "emerald" ? "ring-4 ring-emerald-300" : "")"
+                            title="Emerald Theme"></button>
+                    <button @onclick='() => SetTheme("purple")' 
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 shadow-lg hover:scale-110 transition-all @(CurrentTheme == "purple" ? "ring-4 ring-purple-300" : "")"
+                            title="Purple Theme"></button>
+                    <button @onclick='() => SetTheme("blue")' 
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 shadow-lg hover:scale-110 transition-all @(CurrentTheme == "blue" ? "ring-4 ring-blue-300" : "")"
+                            title="Blue Theme"></button>
+                    <button @onclick='() => SetTheme("orange")' 
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 shadow-lg hover:scale-110 transition-all @(CurrentTheme == "orange" ? "ring-4 ring-orange-300" : "")"
+                            title="Orange Theme"></button>
+                </div>
+
+                <!-- Carousel section with arrows -->
+                <div class="flex items-center justify-between gap-3 pt-4 border-t-2 border-gray-200">
+                    <button @onclick="PreviousTheme" 
+                            class="w-9 h-9 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center hover:bg-gray-200 hover:scale-110 transition-all text-gray-700 font-bold">
+                        ←
+                    </button>
+                    
+                    <div class="flex-1 text-center">
+                        <div class="text-xl font-bold @GetThemeNameColor()">@GetCurrentThemeName()</div>
+                    </div>
+                    
+                    <button @onclick="NextTheme"
+                            class="w-9 h-9 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center hover:bg-gray-200 hover:scale-110 transition-all text-gray-700 font-bold">
+                        →
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- MINIMIZED STATE - Just the floating button -->
+            <button @onclick="ToggleVibe"
+                    class="fixed top-4 right-4 w-14 h-14 rounded-full bg-white shadow-xl flex items-center justify-center text-2xl hover:scale-110 transition-all z-50">
+                🎨
+            </button>
+        }
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-bold @GetTextColor("dark") mb-3 tracking-tight">
+                Savings Calculator
+            </h1>
+            <p class="text-lg @GetTextColor("medium") font-medium">
+                Know exactly when your money runs out
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-3xl shadow-2xl @GetShadowColor() p-8 md:p-12 border @GetBorderColor()">
+            
+            <!-- Name Input -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold @GetTextColor("dark") mb-2 uppercase tracking-wide">
+                    Your Name
+                </label>
+                <input 
+                    type="text" 
+                    @bind="Name" 
+                    class="w-full px-5 py-4 @GetInputBg() border-2 @GetBorderColor() rounded-xl focus:outline-none @GetFocusBorder() @GetFocusRing() transition-all text-lg font-medium @GetTextColor("dark") @GetPlaceholderColor()"
+                    placeholder="Enter your name" />
+            </div>
+
+            <!-- Daily Spending Input -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold @GetTextColor("dark") mb-2 uppercase tracking-wide">
+                    Daily Spending Amount
+                </label>
+                <div class="relative">
+                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-bold @GetTextColor("medium")">₦</span>
+                    <input 
+                        type="text" 
+                        @bind="DailySpendInput"
+                        class="w-full pl-12 pr-5 py-4 @GetInputBg() border-2 @GetBorderColor() rounded-xl focus:outline-none @GetFocusBorder() @GetFocusRing() transition-all text-lg font-medium @GetTextColor("dark") @GetPlaceholderColor()"
+                        placeholder="e.g., 4,000" />
+                </div>
+            </div>
+
+            <!-- Amount Given Input -->
+            <div class="mb-10">
+                <label class="block text-sm font-semibold @GetTextColor("dark") mb-2 uppercase tracking-wide">
+                    Total Amount Given
+                </label>
+                <div class="relative">
+                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-bold @GetTextColor("medium")">₦</span>
+                    <input 
+                        type="text" 
+                        @bind="AmountGivenInput"
+                        class="w-full pl-12 pr-5 py-4 @GetInputBg() border-2 @GetBorderColor() rounded-xl focus:outline-none @GetFocusBorder() @GetFocusRing() transition-all text-lg font-medium @GetTextColor("dark") @GetPlaceholderColor()"
+                        placeholder="e.g., 23,000" />
+                </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <button 
+                type="button" 
+                @onclick="Calculate"
+                class="w-full @GetButtonGradient() text-white font-bold text-lg py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
+                Calculate My Runway
+            </button>
+
+            <!-- Results Section -->
+            @if (HasCalculated)
+            {
+                <div class="mt-10 pt-10 border-t-2 @GetBorderColor()">
+                    <div class="@GetResultsGradient() rounded-2xl p-8 text-white shadow-xl">
+                        <p class="text-lg mb-6 opacity-90">
+                            Ok <strong class="font-bold text-yellow-300">@Name</strong>, based on your spending rate:
+                        </p>
+
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6 border border-white/20">
+                            <p class="text-sm uppercase tracking-wider opacity-75 mb-2">Money runs out on</p>
+                            <p class="text-3xl font-bold">
+                                @EndDay <span class="text-2xl font-normal">of</span> @EndMonth
+                            </p>
+                        </div>
+
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                            <p class="text-sm uppercase tracking-wider opacity-75 mb-2">Days remaining</p>
+                            <p class="text-5xl font-bold text-yellow-300">@DaysLeft</p>
+                            <p class="text-sm mt-2 opacity-75">days until you're out of money</p>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-white/20 grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="opacity-75 mb-1">Daily Spend</p>
+                                <p class="text-xl font-bold">₦@DailySpend.ToString("N2")</p>
+                            </div>
+                            <div>
+                                <p class="opacity-75 mb-1">Amount Given</p>
+                                <p class="text-xl font-bold">₦@AmountGiven.ToString("N2")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Calendar -->
+                    <div class="mt-8 bg-white rounded-2xl p-6 border-2 @GetBorderColor() shadow-lg">
+                        <h3 class="text-xl font-bold @GetTextColor("dark") mb-4 flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Visual Calendar
+                        </h3>
+                        
+                        @foreach (var monthGroup in CalendarDays.GroupBy(d => d.Date.Month))
+                        {
+                            var firstDay = monthGroup.First();
+                            <div class="mb-6">
+                                <h4 class="font-bold @GetTextColor("dark") text-lg mb-3">@firstDay.Date.ToString("MMMM yyyy")</h4>
+                                
+                                <!-- Day headers -->
+                                <div class="grid grid-cols-7 gap-1 mb-2">
+                                    @foreach (var day in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+                                    {
+                                        <div class="text-center text-xs font-semibold @GetTextColor("medium") py-1">@day</div>
+                                    }
+                                </div>
+                                
+                                <!-- Calendar grid -->
+                                <div class="grid grid-cols-7 gap-1">
+                                    @* Empty cells before month starts *@
+                                    @for (int i = 0; i < (int)firstDay.Date.DayOfWeek; i++)
+                                    {
+                                        <div class="aspect-square"></div>
+                                    }
+                                    
+                                    @* Days of the month *@
+                                    @foreach (var calDay in monthGroup)
+                                    {
+                                        <div class="aspect-square p-1">
+                                            <div class="@GetCalendarDayClass(calDay) w-full h-full rounded-lg flex items-center justify-center text-sm font-semibold transition-all hover:scale-105"
+                                                 title="@GetDayTooltip(calDay)">
+                                                @calDay.Date.Day
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        
+                        <!-- Calendar Legend -->
+                        <div class="mt-6 pt-4 border-t @GetBorderColor() flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 @GetInputBg() border-2 @GetBorderColor() rounded"></div>
+                                <span class="@GetTextColor("dark")">Today</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 @GetActiveCalendarDayBg() rounded"></div>
+                                <span class="@GetTextColor("dark")">Money Available</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 bg-red-100 border-2 border-red-300 rounded"></div>
+                                <span class="@GetTextColor("dark")">Out of Money</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (ShowError)
+            {
+                <div class="mt-8 bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold text-red-900 mb-1">Error</p>
+                            <p class="text-red-700 text-sm">
+                                @ErrorMessage
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        <!-- Footer Note -->
+        <p class="text-center mt-8 @GetTextColor("medium") text-sm font-medium">
+            Plan wisely. Spend consciously. Save intentionally.
+        </p>
+    </div>
+</div>
+
+@code {
+    // ───── Theme State ─────
+    string CurrentTheme = "emerald";
+    bool IsVibeExpanded = true;
+
+    // ───── Inputs ─────
+    string Name = "";
+    string DailySpendInput = "";
+    string AmountGivenInput = "";
+
+    // ───── Parsed Values ─────
+    double DailySpend;
+    double AmountGiven;
+
+    // ───── Output State ─────
+    bool HasCalculated = false;
+    bool ShowError = false;
+    string ErrorMessage = "";
+    int DaysLeft;
+    string EndDay = "";
+    string EndMonth = "";
+    DateTime EndDate;
+    List<CalendarDay> CalendarDays = new();
+
+    // ───── Calendar Day Model ─────
+    class CalendarDay
+    {
+        public DateTime Date { get; set; }
+        public bool IsToday { get; set; }
+        public bool HasMoney { get; set; }
+        public bool IsEndDate { get; set; }
+        public int DayNumber { get; set; }
+    }
+
+    void SetTheme(string theme)
+    {
+        CurrentTheme = theme;
+    }
+
+    void ToggleVibe()
+    {
+        IsVibeExpanded = !IsVibeExpanded;
+    }
+
+    void Calculate()
+    {
+        ShowError = false;
+        ErrorMessage = "";
+        
+        if (!TryParseNaira(DailySpendInput, out DailySpend) ||
+            !TryParseNaira(AmountGivenInput, out AmountGiven))
+        {
+            HasCalculated = false;
+            ShowError = true;
+            ErrorMessage = "Please enter valid amounts for both fields. Only numbers, commas, and the ₦ symbol are allowed (e.g., ₦4,000).";
+            return;
+        }
+
+        if (DailySpend <= 0 || AmountGiven <= 0)
+        {
+            HasCalculated = false;
+            ShowError = true;
+            ErrorMessage = "Please enter valid amounts for both fields. Only numbers, commas, and the ₦ symbol are allowed (e.g., ₦4,000).";
+            return;
+        }
+
+        int days = (int)(AmountGiven / DailySpend);
+        
+        // Check if days exceed 365
+        if (days > 365)
+        {
+            HasCalculated = false;
+            ShowError = true;
+            ErrorMessage = "The calculation exceeds 365 days (1 year). Please adjust your daily spending or total amount to see a realistic timeframe.";
+            return;
+        }
+        
+        EndDate = DateTime.Today.AddDays(days);
+
+        DaysLeft = days;
+        EndDay = GetOrdinal(EndDate.Day);
+        EndMonth = EndDate.ToString("MMMM");
+
+        GenerateCalendar();
+        HasCalculated = true;
+    }
+
+    void GenerateCalendar()
+    {
+        CalendarDays.Clear();
+        DateTime today = DateTime.Today;
+        
+        // Only generate calendar for the 3 months leading up to when money runs out
+        // Start 3 months before end date, or from today if end date is less than 3 months away
+        DateTime threeMonthsBefore = EndDate.AddMonths(-3);
+        DateTime calendarStart = threeMonthsBefore > today ? threeMonthsBefore : today;
+        
+        // Start from the first day of the calendar start month
+        calendarStart = new DateTime(calendarStart.Year, calendarStart.Month, 1);
+        
+        // End a few days after the end date for context
+        DateTime calendarEnd = EndDate.AddDays(7);
+        
+        for (DateTime date = calendarStart; date <= calendarEnd; date = date.AddDays(1))
+        {
+            int daysSinceStart = (date - today).Days;
+            
+            CalendarDays.Add(new CalendarDay
+            {
+                Date = date,
+                IsToday = date == today,
+                HasMoney = date >= today && date <= EndDate,
+                IsEndDate = date == EndDate,
+                DayNumber = daysSinceStart + 1
+            });
+        }
+    }
+
+    string GetCalendarDayClass(CalendarDay day)
+    {
+        if (day.IsToday)
+            return $"{GetInputBg()} border-2 {GetBorderColor()} font-bold {GetTextColor("dark")}";
+        
+        if (day.IsEndDate)
+            return "bg-red-500 text-white font-bold border-2 border-red-600 ring-2 ring-red-300";
+        
+        if (day.HasMoney)
+            return $"{GetActiveCalendarDayBg()} text-white font-semibold";
+        
+        if (day.Date > EndDate)
+            return "bg-red-100 text-red-600 border-2 border-red-300";
+        
+        return "bg-gray-100 text-gray-400";
+    }
+
+    string GetDayTooltip(CalendarDay day)
+    {
+        if (day.IsToday)
+            return $"Today - Day 1 of {DaysLeft}";
+        
+        if (day.IsEndDate)
+            return $"Money runs out! (Day {DaysLeft})";
+        
+        if (day.HasMoney)
+            return $"Day {day.DayNumber} - ₦{(AmountGiven - (day.DayNumber - 1) * DailySpend).ToString("N0")} remaining";
+        
+        if (day.Date > EndDate)
+            return "Out of money";
+        
+        return day.Date.ToString("MMM d");
+    }
+
+    bool TryParseNaira(string input, out double value)
+    {
+        value = 0;
+
+        if (string.IsNullOrWhiteSpace(input))
+            return false;
+
+        input = input
+            .Replace("₦", "")
+            .Replace("\u20A6", "")
+            .Replace(",", "")
+            .Trim();
+
+        return double.TryParse(input,
+            System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out value);
+    }
+
+    string GetOrdinal(int day)
+    {
+        if (day % 100 >= 11 && day % 100 <= 13)
+            return $"{day}th";
+
+        return (day % 10) switch
+        {
+            1 => $"{day}st",
+            2 => $"{day}nd",
+            3 => $"{day}rd",
+            _ => $"{day}th"
+        };
+    }
+
+    // ───── Theme Helper Methods ─────
+    string GetBackgroundGradient() => CurrentTheme switch
+    {
+        "purple" => "bg-gradient-to-br from-purple-50 via-pink-50 to-fuchsia-50",
+        "blue" => "bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50",
+        "orange" => "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50",
+        _ => "bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50"
+    };
+
+    string GetTextColor(string shade) => CurrentTheme switch
+    {
+        "purple" when shade == "dark" => "text-purple-900",
+        "purple" when shade == "medium" => "text-purple-700",
+        "blue" when shade == "dark" => "text-blue-900",
+        "blue" when shade == "medium" => "text-blue-700",
+        "orange" when shade == "dark" => "text-orange-900",
+        "orange" when shade == "medium" => "text-orange-700",
+        _ when shade == "dark" => "text-emerald-900",
+        _ => "text-emerald-700"
+    };
+
+    string GetBorderColor() => CurrentTheme switch
+    {
+        "purple" => "border-purple-100",
+        "blue" => "border-blue-100",
+        "orange" => "border-orange-100",
+        _ => "border-emerald-100"
+    };
+
+    string GetInputBg() => CurrentTheme switch
+    {
+        "purple" => "bg-purple-50",
+        "blue" => "bg-blue-50",
+        "orange" => "bg-orange-50",
+        _ => "bg-emerald-50"
+    };
+
+    string GetFocusBorder() => CurrentTheme switch
+    {
+        "purple" => "focus:border-purple-500",
+        "blue" => "focus:border-blue-500",
+        "orange" => "focus:border-orange-500",
+        _ => "focus:border-emerald-500"
+    };
+
+    string GetFocusRing() => CurrentTheme switch
+    {
+        "purple" => "focus:ring-4 focus:ring-purple-100",
+        "blue" => "focus:ring-4 focus:ring-blue-100",
+        "orange" => "focus:ring-4 focus:ring-orange-100",
+        _ => "focus:ring-4 focus:ring-emerald-100"
+    };
+
+    string GetPlaceholderColor() => CurrentTheme switch
+    {
+        "purple" => "placeholder-purple-400",
+        "blue" => "placeholder-blue-400",
+        "orange" => "placeholder-orange-400",
+        _ => "placeholder-emerald-400"
+    };
+
+    string GetButtonGradient() => CurrentTheme switch
+    {
+        "purple" => "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700",
+        "blue" => "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700",
+        "orange" => "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700",
+        _ => "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+    };
+
+    string GetResultsGradient() => CurrentTheme switch
+    {
+        "purple" => "bg-gradient-to-br from-purple-500 to-pink-600",
+        "blue" => "bg-gradient-to-br from-blue-500 to-cyan-600",
+        "orange" => "bg-gradient-to-br from-orange-500 to-red-600",
+        _ => "bg-gradient-to-br from-emerald-500 to-teal-600"
+    };
+
+    string GetShadowColor() => CurrentTheme switch
+    {
+        "purple" => "shadow-purple-900/10",
+        "blue" => "shadow-blue-900/10",
+        "orange" => "shadow-orange-900/10",
+        _ => "shadow-emerald-900/10"
+    };
+
+    string GetActiveCalendarDayBg() => CurrentTheme switch
+    {
+        "purple" => "bg-purple-500",
+        "blue" => "bg-blue-500",
+        "orange" => "bg-orange-500",
+        _ => "bg-emerald-500"
+    };
+
+    // ───── Carousel Navigation Methods ─────
+    void NextTheme()
+    {
+        CurrentTheme = CurrentTheme switch
+        {
+            "emerald" => "purple",
+            "purple" => "blue",
+            "blue" => "orange",
+            "orange" => "emerald",
+            _ => "emerald"
+        };
+    }
+
+    void PreviousTheme()
+    {
+        CurrentTheme = CurrentTheme switch
+        {
+            "emerald" => "orange",
+            "orange" => "blue",
+            "blue" => "purple",
+            "purple" => "emerald",
+            _ => "emerald"
+        };
+    }
+
+    string GetCurrentThemeName() => CurrentTheme switch
+    {
+        "purple" => "Purple",
+        "blue" => "Blue",
+        "orange" => "Orange",
+        _ => "Emerald"
+    };
+
+    string GetThemeNameColor() => CurrentTheme switch
+    {
+        "purple" => "text-purple-600",
+        "blue" => "text-blue-600",
+        "orange" => "text-orange-600",
+        _ => "text-emerald-600"
+    };
+}
