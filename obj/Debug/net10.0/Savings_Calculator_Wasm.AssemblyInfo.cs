@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Savings_Calculator_Wasm")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2ff3a1f9aec516f5710fe1a616ba2c355b395470")]
 [assembly: System.Reflection.AssemblyProductAttribute("Savings_Calculator_Wasm")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Savings_Calculator_Wasm")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
