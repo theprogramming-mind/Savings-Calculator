@@ -18,9 +18,4 @@
                  PublishedContent="wwwroot\service-worker.published.js" />
 </ItemGroup>
 
-  <!-- This runs your Tailwind CSS build automatically before every compile -->
-  <Target Name="BuildTailwind" BeforeTargets="Build">
-    <Exec Command="npx tailwindcss -i ./wwwroot/app.css -o ./wwwroot/app.min.css --minify" />
-  </Target>
-
 </Project>
